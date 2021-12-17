@@ -16,7 +16,7 @@ const addedColor = document.querySelector("#colors");
 const addedQuantity = document.getElementById("quantity");
 
 
-
+// requête API => affichage détail du produit sur la page 
 fetch(`http://localhost:3000/api/products/${productId}`) 
     .then(res => {
         return res.json();
@@ -34,77 +34,63 @@ fetch(`http://localhost:3000/api/products/${productId}`)
         });
     
     //Fonction récupérer éléments du local storage
-function getFromStorage() {
-    return localStorage.getItem("CART");
-}
+    function getFromStorage() {
+        return localStorage.getItem("CART");
+    }
 
-//Fonction vérifier si article en doublon
-function checkProduct(addedProduct) {
-    const cart = JSON.parse(getFromStorage());
-    let findSameIndex = cart.findIndex(object => object.id == addedProduct.id && object.color == addedProduct.color);
-    return findSameIndex;
-}
+    //Fonction vérifier si article en doublon
+    function checkProduct(addedProduct) {
+        const cart = JSON.parse(getFromStorage());
+        let findSameIndex = cart.findIndex(object => object.id == addedProduct.id && object.color == addedProduct.color);
+        return findSameIndex;
+    }
 
-//Fonction envoi du panier au local storage
-function addToLocalStorage (addedProduct) {
-    const storage = getFromStorage();
+    //Fonction envoi du panier au local storage
+    function addToLocalStorage (addedProduct) {
+        const storage = getFromStorage();
 
-    if (storage) {
-        cart = JSON.parse(storage);
-        const sameProductIndex = checkProduct(addedProduct);
-        if (sameProductIndex >= 0) {
-            cart[sameProductIndex].quantity = String(parseFloat(cart[sameProductIndex].quantity) + parseFloat(addedProduct.quantity));
-            cart[sameProductIndex].totalPrice = String(parseFloat(cart[sameProductIndex].totalPrice) + parseFloat(addedProduct.price));
+        if (storage) {
+            cart = JSON.parse(storage);
+            const sameProductIndex = checkProduct(addedProduct);
+            if (sameProductIndex >= 0) {
+                cart[sameProductIndex].quantity = String(parseFloat(cart[sameProductIndex].quantity) + parseFloat(addedProduct.quantity));
+                cart[sameProductIndex].totalPrice = String(parseFloat(cart[sameProductIndex].totalPrice) + parseFloat(addedProduct.price));
+            } else {
+                cart.push(addedProduct);
+            }
+            localStorage.setItem("CART", JSON.stringify(cart));
+
         } else {
+            let cart = [];
             cart.push(addedProduct);
+            localStorage.setItem("CART", JSON.stringify(cart));
         }
-        localStorage.setItem("CART", JSON.stringify(cart));
-
-    } else {
-        let cart = [];
-        cart.push(addedProduct);
-        localStorage.setItem("CART", JSON.stringify(cart));
     }
-}
 
-//Fonction ajouter un produit au panier (création objet + ajout au panier)
-function addProduct() {
-    if (addedColor.value == "") {
-        alert("Veuillez sélectionner une couleur pour votre produit.");
-    } else {
-        let addedProduct = {
-            id: productId, 
-            name: `${dataList.name}`,
-            color: addedColor.value,
-            price: `${dataList.price}`,
-            image: `${dataList.imageUrl}`,
-            altTxt: `${dataList.altTxt}`,
-            quantity: addedQuantity.value,
-            totalPrice: String(`${addedQuantity.value}` * `${dataList.price}`)
-        };
-        addToLocalStorage(addedProduct);
+    //Fonction ajouter un produit au panier (création objet + ajout au panier)
+    function addProduct() {
+        if (addedColor.value == "") {
+            alert("Veuillez sélectionner une couleur pour votre produit.");
+        } else {
+            let addedProduct = {
+                id: productId, 
+                name: `${dataList.name}`,
+                color: addedColor.value,
+                price: `${dataList.price}`,
+                image: `${dataList.imageUrl}`,
+                altTxt: `${dataList.altTxt}`,
+                quantity: addedQuantity.value,
+                totalPrice: String(`${addedQuantity.value}` * `${dataList.price}`)
+            };
+            addToLocalStorage(addedProduct);
+        }
     }
-}
 
-//Event Listener
-const addButton = document.getElementById("addToCart");
-addButton.addEventListener('click', addProduct);
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    });
+    //Event Listener
+    const addButton = document.getElementById("addToCart");
+    addButton.addEventListener('click', addProduct);
+});
 
-    // ------------------- Gestion du panier
 
 
 
