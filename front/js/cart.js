@@ -3,6 +3,8 @@
 const storage = JSON.parse(localStorage.getItem("CART"));
 console.log(storage);
 
+let arrayOrder = []; //tableau de produits (à envoyer avec l'objet contact pour la commande)
+
 storage.forEach(element => {
     document.getElementById("cart__items").innerHTML += `<article class="cart__item" data-id="${element.id}" data-color="${element.color}">
                                 <div class="cart__item__img">
@@ -25,6 +27,8 @@ storage.forEach(element => {
                                     </div>
                                 </div>
                             </article>`;
+    let orderedId = `${element.id}`;
+    arrayOrder.push(orderedId);
 })
 
 // Affichage du nombre total d'articles
@@ -154,17 +158,14 @@ orderButton.addEventListener('click', function(e) {
     && regExpEmail.test(formEmail.value) == true) { 
         //si tous les champs sont correctement remplis
         console.log("ok pour création objet");
-        //création tableau de produits
-        let arrayOrder = storage;
-        console.log(arrayOrder);
+        
         // création objet contact
         let contact = {
-            Nom: formFirstName.value,
-            Prénom: formLastName.value,
-            Adresse: formAddress.value,
-            Ville: formCity.value,
-            Mail: formEmail.value,
-            Commande: arrayOrder
+            lastName: formFirstName.value,
+            firstName: formLastName.value,
+            address: formAddress.value,
+            city: formCity.value,
+            email: formEmail.value,
         }
         console.log(contact);
         //envoyer tout ça sur le local storage ?
