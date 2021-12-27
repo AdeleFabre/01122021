@@ -3,7 +3,7 @@
 const storage = JSON.parse(localStorage.getItem("CART"));
 console.log(storage);
 
-let arrayOrder = []; //tableau de produits (à envoyer avec l'objet contact pour la commande)
+let products = []; //tableau de produits (à envoyer avec l'objet contact pour la commande)
 
 storage.forEach(element => {
     document.getElementById("cart__items").innerHTML += `<article class="cart__item" data-id="${element.id}" data-color="${element.color}">
@@ -28,7 +28,7 @@ storage.forEach(element => {
                                 </div>
                             </article>`;
     let orderedId = `${element.id}`;
-    arrayOrder.push(orderedId);
+    products.push(orderedId);
 })
 
 // Affichage du nombre total d'articles
@@ -148,7 +148,6 @@ formEmail.addEventListener('change', function() {
 // -------------------- Validation formulaire
 
 let orderButton = document.getElementById("order");
-
 orderButton.addEventListener('click', function(e) {
     e.preventDefault();
     if (regExpLetters.test(formFirstName.value) == true
@@ -156,9 +155,8 @@ orderButton.addEventListener('click', function(e) {
     && regExpLettersAndNumbers.test(formAddress.value) == true
     && regExpLetters.test(formCity.value) == true
     && regExpEmail.test(formEmail.value) == true) { 
-        //si tous les champs sont correctement remplis
+        //si tous les champs sont correctement remplis >> créer objet contact + requête post + redirection + affichage (?) + clear LS
         console.log("ok pour création objet");
-        
         // création objet contact
         let contact = {
             lastName: formFirstName.value,
@@ -168,16 +166,38 @@ orderButton.addEventListener('click', function(e) {
             email: formEmail.value,
         }
         console.log(contact);
-        //envoyer tout ça sur le local storage ?
-        //redirection vers page confirmation
+        console.log(products);
+        //requête API pour récupérer le n° de commande
+        const order = {
+            contact, 
+            products
+        };
+        const options = {
+            method: "POST",
+            body: JSON.stringify(order),
+            headers: { "Content-Type": "application/json" },
+        };
+        fetch(`http://localhost:3000/api/products/order`, options)
+        .then(res => {
+            return res.json();
+        })
+        .then(data => {
+            let orderId = data.orderId;
+            //console.log(orderId);
+            //redirection vers page confirmation
+            document.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?id=${orderId}`;
+        });
+        
+        
         
 
-    } else { //si au moins l'un des champs n'est pas correctement rempli
+    } else { //si au moins l'un des champs n'est pas correctement rempli >> alerte
         alert("Veuillez intégralement remplir le formulaire avant de soumettre votre commande.");
     }
 })
 
+// Page de confirmation
 
 
-//création objet contact
-//création tableau produit
+
+

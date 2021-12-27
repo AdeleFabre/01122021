@@ -22,7 +22,7 @@ fetch(`http://localhost:3000/api/products/${productId}`)
         return res.json();
     })
     .then(dataList => {
-        //console.log(jsonProductDetail);
+        //console.log(dataList);
         document.querySelector("#title").textContent += dataList.name;
         document.querySelector("#price").textContent += dataList.price;
         document.querySelector("#description").textContent += dataList.description;
@@ -90,84 +90,3 @@ fetch(`http://localhost:3000/api/products/${productId}`)
     const addButton = document.getElementById("addToCart");
     addButton.addEventListener('click', addProduct);
 });
-
-
-
-
-
-
-//------ old
-
-/*
-
-fetch(`http://localhost:3000/api/products/${productId}`) 
-    .then(data => data.json())
-    .then(jsonProductDetail => {
-        //console.log(jsonProductDetail);
-        document.querySelector("h1").innerHTML = jsonProductDetail["name"];
-        document.querySelector("#price").innerHTML = jsonProductDetail["price"];
-        document.querySelector("#description").innerHTML = jsonProductDetail["description"];
-        document.querySelector("div.item__img").innerHTML = `<img src="${jsonProductDetail["imageUrl"]}" alt="${jsonProductDetail["altTxt"]}">`;
-        jsonProductDetail.colors.forEach(element => {
-            colorOption = document.createElement("option");
-            document.getElementById("colors").appendChild(colorOption);
-            colorOption.innerHTML = `<option value="${element}">${element}</option>`; 
-        });
-    });
-
-// Ajout d'un produit au panier
-const addButton = document.getElementById("addToCart");
-addButton.addEventListener('click', function(event) { //on écoute le bouton
-    event.preventDefault;
-    let addedProduct = { //on stocke la commande dans un objet
-        ID:productId,
-        Couleur: addedColor.value,
-        Quantite: addedQuantity.value
-    };
-    //console.log(addedProduct); // afficher le produit commandé
-
-
-
-
-    // ------------------- Local Storage
-    //optionsProduits pour Egenie == addedProduct pour moi
-
-    // création variable pour stocker les données dans le local storage
-    let produitEnregistreDansLocalStorage = JSON.parse(localStorage.getItem("product")); //= version en langage objet (parse) de ce qui est dans le LS
-
-    if(produitEnregistreDansLocalStorage) { //s'il y a déjà des produits d'enregistrés dans le lS
-        produitEnregistreDansLocalStorage.push(addedProduct);
-        localStorage.setItem("product", JSON.stringify(produitEnregistreDansLocalStorage));
-        console.log(produitEnregistreDansLocalStorage);
-
-    } else { // s'il n'y a pas de produits enregistrés dans le LS
-        produitEnregistreDansLocalStorage = [];
-        produitEnregistreDansLocalStorage.push(addedProduct);
-        localStorage.setItem("product", JSON.stringify(produitEnregistreDansLocalStorage));
-
-        console.log(produitEnregistreDansLocalStorage);
-    };
-
-});
-
-/* ----------------- test modif valeur qté d'un objet si doublon pushé dans un array
-
-let arrayTest = [];
-let objet = {
-    id: "ob001",
-    couleur: "vert",
-    quantite: 1
-}
-arrayTest.push(objet);
-let newObjet = {
-    id: "ob001",
-    couleur: "vert",
-    quantite: 1
-}
-
-if(newObjet.id == objet.id && newObjet.couleur == objet.couleur) {
-    objet.quantite = objet.quantite + newObjet.quantite;  
-} else {
-    arrayTest.push(newObjet);
-}
-console.log(arrayTest);*/
