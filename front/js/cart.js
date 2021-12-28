@@ -1,10 +1,15 @@
-// --------------------- Récupération des données stockées dans le local storage + affichage dans la page Panier
+let products = []; //tableau de produits (à envoyer avec l'objet contact pour la commande)
 
+
+
+
+// --------------------- Affichage du panier
+
+//Récupérer les données stockées dans le local storage
 const storage = JSON.parse(localStorage.getItem("CART"));
 console.log(storage);
 
-let products = []; //tableau de produits (à envoyer avec l'objet contact pour la commande)
-
+//Afficher les produits du panier sur la page
 storage.forEach(element => {
     document.getElementById("cart__items").innerHTML += `<article class="cart__item" data-id="${element.id}" data-color="${element.color}">
                                 <div class="cart__item__img">
@@ -27,39 +32,40 @@ storage.forEach(element => {
                                     </div>
                                 </div>
                             </article>`;
+
+    //Ajouter les ID des produits du panier au tableau des produits                    
     let orderedId = `${element.id}`;
     products.push(orderedId);
 })
 
-// Affichage du nombre total d'articles
-let totalQuantity = document.getElementById("totalQuantity");
+// Afficher le nombre total d'articles
 let sumQuantity = 0;
 storage.forEach(Object => {
     sumQuantity += JSON.parse(Object.quantity);
 });
-totalQuantity.textContent = sumQuantity;
+document.getElementById("totalQuantity").textContent = sumQuantity;
 
-
-// Affichage du prix total
-let totalPrice = document.getElementById("totalPrice");
+// Afficher le prix total
 let sumPrice = 0;
 storage.forEach(Object => {
     sumPrice += JSON.parse(Object.totalPrice);
 });
-totalPrice.textContent = sumPrice;
+document.getElementById("totalPrice").textContent = sumPrice;
+
+
+
 
 // --------------------- Modification du panier
 
-let newQuantityInput = [...document.getElementsByClassName("itemQuantity")];
+// Supprimer un produit
 let deleteButton = [...document.getElementsByClassName("deleteItem")];
-let productsInCart = document.getElementById("cart__items");
-
-// Bouton Supprimer
 deleteButton.forEach((element, index) => {
     element.addEventListener('click', () => {
+
         // supprimer dans le DOM
         let deletedProduct = deleteButton[index].closest('.cart__item');
         deletedProduct.remove();
+
         // supprimer dans le local storage
         storage.splice(index, 1);
         localStorage.setItem('CART', JSON.stringify(storage));
@@ -68,17 +74,25 @@ deleteButton.forEach((element, index) => {
 })
 
 // Modification de la quantité par le client
+let newQuantityInput = [...document.getElementsByClassName("itemQuantity")];
+let productsInCart = document.getElementById("cart__items");
 newQuantityInput.forEach((productsInCart, index) => {
     productsInCart.addEventListener('change', () => {
+
         if(newQuantityInput[index].value <= 0) {
-            console.log("article à supprimer");
+
+            // supprimer dans le DOM
             let deletedProduct = newQuantityInput[index].closest('.cart__item');
             deletedProduct.remove();
+
+            // supprimer dans le local storage
             storage.splice(index, 1);
             localStorage.setItem('CART', JSON.stringify(storage));
             location.reload();
+
         } else {
-            // modifie la quantité dans le local storage et le DOM
+
+            // modifie la quantité dans le local storage
             storage[index].quantity = newQuantityInput[index].value;
             storage[index].totalPrice = newQuantityInput[index].value * storage[index].price;
             localStorage.setItem('CART', JSON.stringify(storage));
@@ -87,19 +101,16 @@ newQuantityInput.forEach((productsInCart, index) => {
     })
 })
 
-// --------------------- Validation Inputs du formulaire
 
-let formFirstName = document.getElementById("firstName");
-let formLastName = document.getElementById("lastName");
-let formAddress = document.getElementById("address");
-let formCity = document.getElementById("city");
-let formEmail = document.getElementById("email");
+
+// --------------------- Validation des inputs du formulaire
+
 let regExpLetters = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü\s\-']+$/;
 let regExpLettersAndNumbers = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü0-9\s\-',]+$/;
 let regExpEmail = /^[a-zA-Z0-9.\-_]+[@]{1}[a-zA-Z0-9.\-_]+[.]{1}[a-z]{2,10}$/; 
-//regrouper dans un objet ou tableau
 
 //Prénom 
+let formFirstName = document.getElementById("firstName");
 formFirstName.addEventListener('change', function() {
     let inputToCheck = formFirstName.value;
     let test = regExpLetters.test(inputToCheck);
@@ -111,6 +122,7 @@ formFirstName.addEventListener('change', function() {
 })
 
 //Nom
+let formLastName = document.getElementById("lastName");
 formLastName.addEventListener('change', function() {
     let inputToCheck = formLastName.value;
     let test = regExpLetters.test(inputToCheck);
@@ -122,6 +134,7 @@ formLastName.addEventListener('change', function() {
 })
 
 //Adresse
+let formAddress = document.getElementById("address");
 formAddress.addEventListener('change', function() {
     let inputToCheck = formAddress.value;
     let test = regExpLettersAndNumbers.test(inputToCheck);
@@ -132,7 +145,8 @@ formAddress.addEventListener('change', function() {
         }
 })
 
-//Ville - faut-il permettre un CP ou pas ?
+//Ville
+let formCity = document.getElementById("city");
 formCity.addEventListener('change', function() {
     let inputToCheck = formCity.value;
     let test = regExpLetters.test(inputToCheck);
@@ -144,6 +158,7 @@ formCity.addEventListener('change', function() {
 })
 
 //Email
+let formEmail = document.getElementById("email");
 formEmail.addEventListener('change', function() {
     let inputToCheck = formEmail.value;
     let test = regExpEmail.test(inputToCheck);
@@ -157,30 +172,27 @@ formEmail.addEventListener('change', function() {
 
 // -------------------- Envoi de la commande
 
-let orderButton = document.getElementById("order");
-orderButton.addEventListener('click', function(e) {
+document.getElementById("order").addEventListener('click', function(e) {
     e.preventDefault();
-    if (
-    regExpLetters.test(formFirstName.value) === true
+
+    // conditions pour que la commande soit traitée : champs correctement complétés + panier rempli
+    if (regExpLetters.test(formFirstName.value) === true
     && regExpLetters.test(formLastName.value) === true
     && regExpLettersAndNumbers.test(formAddress.value) === true
     && regExpLetters.test(formCity.value) === true
     && regExpEmail.test(formEmail.value) === true
-    && products.length != 0
-    ) { 
-        //si tous les champs sont correctement remplis >> créer objet contact + requête post + redirection
-        //console.log("ok pour création objet");
-        // création objet contact
+    && products.length != 0) { 
+        
+        // création de l'objet contact à envoyer à l'API
         let contact = {
             lastName: formFirstName.value,
             firstName: formLastName.value,
             address: formAddress.value,
             city: formCity.value,
-            email: formEmail.value,
+            email: formEmail.value
         }
-        console.log(contact);
-        console.log(products);
-        //requête API pour récupérer le n° de commande
+        
+        // requête API pour envoyer l'objet contact + le tableau des produits
         const order = {
             contact, 
             products
@@ -194,20 +206,17 @@ orderButton.addEventListener('click', function(e) {
         .then(res => {
             return res.json();
         })
+
+        // Récupérer le n° de commande
         .then(data => {
             let orderId = data.orderId;
-            //console.log(orderId);
-            //redirection vers page confirmation
+            
+            //redirection vers la page confirmation
             document.location.href = `http://127.0.0.1:5500/front/html/confirmation.html?id=${orderId}`;
-        });
-        
+        });        
         
 
-    } else { //si au moins l'un des champs n'est pas correctement rempli >> alerte
-        alert("Veuillez vérifier votre panier et intégralement remplir le formulaire avant de soumettre votre commande.");
+    } else {
+        alert("Veuillez vérifier votre panier et intégralement remplir le formulaire avant de passer votre commande.");
     }
 })
-
-
-
-

@@ -1,4 +1,4 @@
-// ------------------- Récupération ID produit
+// ------------------- Récupération de l'ID du produit
 let productId;
 let str = window.location.protocol + "//" + window.location.host + "/" + window.location.pathname + window.location.search;
 let url = new URL(str);
@@ -14,6 +14,8 @@ let colorOption;
 let cart = [];
 const addedColor = document.querySelector("#colors");
 const addedQuantity = document.getElementById("quantity");
+const addButton = document.getElementById("addToCart");
+
 
 
 // requête API => affichage détail du produit sur la page 
@@ -22,7 +24,8 @@ fetch(`http://localhost:3000/api/products/${productId}`)
         return res.json();
     })
     .then(dataList => {
-        //console.log(dataList);
+
+        //afficher les détails du produit sur la page
         document.querySelector("#title").textContent += dataList.name;
         document.querySelector("#price").textContent += dataList.price;
         document.querySelector("#description").textContent += dataList.description;
@@ -69,7 +72,7 @@ fetch(`http://localhost:3000/api/products/${productId}`)
 
     //Fonction ajouter un produit au panier (création objet + ajout au panier)
     function addProduct() {
-        if (addedColor.value == "" || addedQuantity.value == "" || addedQuantity.value < 1) {
+        if (addedColor.value == "" || addedQuantity.value < 1) {
             alert("Afin de confirmer votre commande, veuillez sélectionner une couleur et une quantité pour votre produit.");
         } else {
             let addedProduct = {
@@ -89,9 +92,12 @@ fetch(`http://localhost:3000/api/products/${productId}`)
     }
 
     //Event Listener bouton Ajouter au Panier
-    const addButton = document.getElementById("addToCart");
     addButton.addEventListener('click', addProduct);
 });
+
+
+
+
 
 // Validation quantité saisie
 let regExp = /^[0-9]+$/;
