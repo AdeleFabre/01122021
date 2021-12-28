@@ -69,8 +69,8 @@ fetch(`http://localhost:3000/api/products/${productId}`)
 
     //Fonction ajouter un produit au panier (création objet + ajout au panier)
     function addProduct() {
-        if (addedColor.value == "") {
-            alert("Veuillez sélectionner une couleur pour votre produit.");
+        if (addedColor.value == "" || addedQuantity.value == "" || addedQuantity.value < 1) {
+            alert("Afin de confirmer votre commande, veuillez sélectionner une couleur et une quantité pour votre produit.");
         } else {
             let addedProduct = {
                 id: productId, 
@@ -83,6 +83,8 @@ fetch(`http://localhost:3000/api/products/${productId}`)
                 totalPrice: String(`${addedQuantity.value}` * `${dataList.price}`)
             };
             addToLocalStorage(addedProduct);
+            alert("Votre produit a bien été ajouté à votre panier.")
+            location.reload();
         }
     }
 

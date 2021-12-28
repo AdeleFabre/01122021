@@ -70,11 +70,20 @@ deleteButton.forEach((element, index) => {
 // Modification de la quantité par le client
 newQuantityInput.forEach((productsInCart, index) => {
     productsInCart.addEventListener('change', () => {
-        // modifie la quantité dans le local storage et le DOM
-        storage[index].quantity = newQuantityInput[index].value;
-        storage[index].totalPrice = newQuantityInput[index].value * storage[index].price;
-        localStorage.setItem('CART', JSON.stringify(storage));
-        location.reload();
+        if(newQuantityInput[index].value <= 0) {
+            console.log("article à supprimer");
+            let deletedProduct = newQuantityInput[index].closest('.cart__item');
+            deletedProduct.remove();
+            storage.splice(index, 1);
+            localStorage.setItem('CART', JSON.stringify(storage));
+            location.reload();
+        } else {
+            // modifie la quantité dans le local storage et le DOM
+            storage[index].quantity = newQuantityInput[index].value;
+            storage[index].totalPrice = newQuantityInput[index].value * storage[index].price;
+            localStorage.setItem('CART', JSON.stringify(storage));
+            location.reload();
+        }
     })
 })
 
@@ -85,9 +94,10 @@ let formLastName = document.getElementById("lastName");
 let formAddress = document.getElementById("address");
 let formCity = document.getElementById("city");
 let formEmail = document.getElementById("email");
-let regExpLetters = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü\s\-']*$/;
-let regExpLettersAndNumbers = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü0-9\s\-',]*$/;
+let regExpLetters = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü\s\-']+$/;
+let regExpLettersAndNumbers = /^[a-zA-Zàáâãäæçèéêëìíîïñòóôõöœšùúûü0-9\s\-',]+$/;
 let regExpEmail = /^[a-zA-Z0-9.\-_]+[@]{1}[a-zA-Z0-9.\-_]+[.]{1}[a-z]{2,10}$/; 
+//regrouper dans un objet ou tableau
 
 //Prénom 
 formFirstName.addEventListener('change', function() {
@@ -145,18 +155,21 @@ formEmail.addEventListener('change', function() {
 })
 
 
-// -------------------- Validation formulaire
+// -------------------- Envoi de la commande
 
 let orderButton = document.getElementById("order");
 orderButton.addEventListener('click', function(e) {
     e.preventDefault();
-    if (regExpLetters.test(formFirstName.value) == true
-    && regExpLetters.test(formLastName.value) == true
-    && regExpLettersAndNumbers.test(formAddress.value) == true
-    && regExpLetters.test(formCity.value) == true
-    && regExpEmail.test(formEmail.value) == true) { 
-        //si tous les champs sont correctement remplis >> créer objet contact + requête post + redirection + affichage (?) + clear LS
-        console.log("ok pour création objet");
+    if (
+    regExpLetters.test(formFirstName.value) === true
+    && regExpLetters.test(formLastName.value) === true
+    && regExpLettersAndNumbers.test(formAddress.value) === true
+    && regExpLetters.test(formCity.value) === true
+    && regExpEmail.test(formEmail.value) === true
+    && products.length != 0
+    ) { 
+        //si tous les champs sont correctement remplis >> créer objet contact + requête post + redirection
+        //console.log("ok pour création objet");
         // création objet contact
         let contact = {
             lastName: formFirstName.value,
@@ -189,14 +202,11 @@ orderButton.addEventListener('click', function(e) {
         });
         
         
-        
 
     } else { //si au moins l'un des champs n'est pas correctement rempli >> alerte
-        alert("Veuillez intégralement remplir le formulaire avant de soumettre votre commande.");
+        alert("Veuillez vérifier votre panier et intégralement remplir le formulaire avant de soumettre votre commande.");
     }
 })
-
-// Page de confirmation
 
 
 
