@@ -88,7 +88,17 @@ fetch(`http://localhost:3000/api/products/${productId}`)
         }
     }
 
-    //Event Listener
+    //Event Listener bouton Ajouter au Panier
     const addButton = document.getElementById("addToCart");
     addButton.addEventListener('click', addProduct);
+});
+
+// Validation quantité saisie
+let regExp = /^[0-9]+$/;
+addedQuantity.addEventListener('change', function(){
+    let test = regExp.test(addedQuantity.value);
+    if(test === false) {
+        alert("Merci de saisir une quantité valide pour votre commande.");
+        addedQuantity.value = "";
+    }
 });
